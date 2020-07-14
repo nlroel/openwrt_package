@@ -1,0 +1,19 @@
+#!/bin/sh /etc/rc.common
+START=90
+
+run_fixgro()
+{
+	ethtool -K br-lan gro off gso off
+	ethtool -K eth0 gro off gso off
+	ethtool -K eth0.1 gro off gso off
+	ethtool -K wg0 gro off gso off
+	ethtool -K wlan0 gro off gso off
+	ethtool -K wlan0-1 gro off gso off
+	ethtool -K wlan1 gro off gso off
+}
+
+start()
+{
+	run_fixgro
+}
+

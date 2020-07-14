@@ -1,0 +1,40 @@
+#!/bin/sh /etc/rc.common
+START=90
+
+run_udp()
+{
+	local server
+	local serverport
+	local client
+	local clientport
+	local password
+	local fec
+	local timeout
+        
+	config_get server $1 server
+        /sbin/validate_data "ipaddr" "$server" >/dev/null 2>&1
+        [ $? -ne 0 ] && server=$(nslookup "$server" | sed -n 's/^Address[[:space:]]*[0-9]*:[[:space:]]*\(\([0-9]\{1,3\}\.\)\{3\}[0-9]\{1,3\}\)$/\1/p')
+	config_get serverport $1 serverport  
+	config_get client $1 client 
+	config_get clientport $1 clientport  
+	config_get password $1 password  
+	config_get fec $1 fec  
+	config_get timeout $1 timeout
+	(udpspeeder -c -l$client:$clientport -r127.0.0.1:22333 -f$fec --mode 0 --timeout $timeout  >/dev/null 2>&1 )&
+        (autorun udp2raw -c -l127.0.0.1:22333 -r$server:$serverport --raw-mode faketcp -a -k $password --fix-gro --cipher-mode none --auth-mode none >/dev/null 2>&1 )&
+	ip route add $server via $(ip route | awk '$1=="default" {print $3}')
+}
+
+start()
+{
+	config_load udptools
+	config_foreach run_udp udpconfig    
+}
+
+stop()
+{
+    
+	killall -9 udpspeeder
+	ps -ef | grep 'autorun' | grep -v grep | awk '{print $1}' | xargs kill -9
+	killall -9 udp2raw
+}
