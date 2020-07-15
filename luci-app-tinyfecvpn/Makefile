@@ -21,7 +21,7 @@ define Package/$(PKG_NAME)
 	SECTION:=luci
 	CATEGORY:=LuCI
 	SUBMENU:=3. Applications
-	DEPENDS:= +tinyfecvpn
+	DEPENDS:= +tinyfecVPN
 	TITLE:=LuCI Support for tinyFecVPN
 	PKGARCH:=all
 
