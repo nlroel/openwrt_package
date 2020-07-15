@@ -30,6 +30,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/tinyfecVPN
 	SECTION:=net
 	CATEGORY:=Network
+	DEPENDS:= +kmod-tun
 	TITLE:=VPN with Build-in Forward Error Correction Support
 	URL:=https://github.com/wangyu-/tinyfecVPN
 endef
